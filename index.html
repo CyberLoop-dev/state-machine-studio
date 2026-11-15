@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>State Machine Studio</title>
+<style>body{font:16px system-ui;background:#111827;color:#e5efff;max-width:850px;margin:40px auto;padding:0 18px}input,select,button{padding:10px;margin:4px;background:#1d2a40;color:inherit;border:1px solid #40516b;border-radius:8px}button{cursor:pointer}.card{background:#19263a;padding:16px;border-radius:12px;margin:12px 0}li{margin:7px 0}.active{color:#56dce9;font-weight:bold}</style>
+<h1>State Machine Studio</h1><p>Define transitions and test events against the current state.</p>
+<div class="card"><label>States <input id="states" value="idle,running,done" size="30"></label><button id="load">Load states</button><p id="current"></p></div>
+<div class="card"><h3>Add transition</h3><input id="from" placeholder="From state"><input id="event" placeholder="Event"><input id="to" placeholder="To state"><button id="add">Add</button></div>
+<div class="card"><h3>Send event</h3><input id="send" placeholder="Event name"><button id="step">Send event</button><p id="message"></p></div>
+<div class="card"><h3>Transitions</h3><ul id="list"></ul></div>
+<script>
+let states=['idle','running','done'],transitions=[],current='idle';const $=s=>document.querySelector(s);
+function render(){$('#current').textContent='Current state: '+current;$('#current').className='active';$('#list').innerHTML='';transitions.forEach(t=>{const li=document.createElement('li');li.textContent=t.from+' --'+t.event+'--> '+t.to;$('#list').appendChild(li);});}
+$('#load').onclick=()=>{states=$('#states').value.split(',').map(s=>s.trim()).filter(Boolean);current=states[0]||'';transitions=[];$('#message').textContent='States loaded.';render();};
+$('#add').onclick=()=>{const t={from:$('#from').value.trim(),event:$('#event').value.trim(),to:$('#to').value.trim()};if(!states.includes(t.from)||!states.includes(t.to)||!t.event){$('#message').textContent='Both states must exist and event is required.';return;}transitions.push(t);render();};
+$('#step').onclick=()=>{const e=$('#send').value.trim(),t=transitions.find(x=>x.from===current&&x.event===e);if(t){current=t.to;$('#message').textContent='Transition accepted.';}else{$('#message').textContent='No transition for this state and event.';}render();};render();
+</script></html>
